@@ -24,29 +24,7 @@ The application is built using the following technologies:
 The project is organized into the following directories:
 
 1- Frontend (Angular 19):
-src/
-├── app/
-│   ├── components/
-│   │   ├── chat/              # Main chat interface
-│   │   ├── data-table/        # Query results display
-│   │   └── chart/             # Data visualization
-│   ├── services/
-│   │   └── chat.service.ts    # API communication
-│   ├── models/
-│   │   └── chat-message.ts    # TypeScript interfaces
-│   └── app.component.ts       # Root component
-├── assets/                    # Static files
-└── styles.css                # Global styles
 
 2- Backend (Python FastAPI):
-app/
-├── main.py                    # Entry point
-├── api/
-│   ├── chat.py                # Chat API endpoints
-│   └── utils.py               # Utility functions
-├── models/
-│   └── chat_message.py        # Pydantic models
-└── config.py                  # Configuration settings
-
 
 
