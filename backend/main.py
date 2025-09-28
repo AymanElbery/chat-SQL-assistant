@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, Optional, Literal
 import asyncio
-from services.llm_service import LLMService
+from services.llm.translation_service import TranslationService
+from services.llm.text_2_sql_service import Text2SQLService
 from services.database_service import DatabaseService
 from services.result_processor import ResultProcessor
 
@@ -19,7 +20,8 @@ app.add_middleware(
 )
 
 # Initialize services
-llm_service = LLMService()
+translation_service = TranslationService()
+text_2_sql_service = Text2SQLService()
 db_service = DatabaseService()
 result_processor = ResultProcessor()
 
@@ -36,7 +38,7 @@ async def process_query(request: QueryRequest):
     try:
         # Step 0: Translate query if needed using local LLM
         if request.language == "ar":
-            english_query = await llm_service.generate_english_query(
+            english_query = await translation_service.generate_english_query(
                 request.query, 
                 request.language
             )
@@ -46,7 +48,7 @@ async def process_query(request: QueryRequest):
         #raise HTTPException(status_code=500, detail=str(english_query))
 
         # Step 1: Convert natural language to SQL
-        sql_query = await llm_service.generate_sql(
+        sql_query = await text_2_sql_service.generate_sql(
             english_query, 
             request.language
         )

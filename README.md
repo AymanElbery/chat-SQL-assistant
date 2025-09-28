@@ -24,7 +24,12 @@ The application is built using the following technologies:
 The project is organized into the following directories:
 
 1- Frontend (Angular 19):
-
 2- Backend (Python FastAPI):
 
+## Snapshots from the Application
+
+![Screenshot 1](https://github.com/ChatSQLAssistant/ChatSQLAssistant/assets/1.jpeg)
+![Screenshot 2](https://github.com/ChatSQLAssistant/ChatSQLAssistant/assets/2.jpeg)
+![Screenshot 3](https://github.com/ChatSQLAssistant/ChatSQLAssistant/assets/3.jpeg)
+![Screenshot 4](https://github.com/ChatSQLAssistant/ChatSQLAssistant/assets/4.jpeg)
 

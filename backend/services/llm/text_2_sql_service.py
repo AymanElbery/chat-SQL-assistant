@@ -1,62 +1,27 @@
-from typing import Optional
-import asyncio
-from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModelForSeq2SeqLM, M2M100ForConditionalGeneration
-import torch
-import json
+from transformers import AutoTokenizer, AutoModelForCausalLM
 from llama_cpp import Llama
 
-class LLMService:
+class Text2SQLService:
     def __init__(self):
         self.text_2_sql_tokenizer = None
         self.text_2_sql_model = None
 
-        self.translation_tokenizer = None
-        self.translation_model = None
-
-        self.initialize_translation_model()
         self.initialize_text_2_sql_model()
-    
-    def initialize_translation_model(self):
-        """Initialize the local translation LLM model"""
-        try:
-            
-            self.translation_tokenizer = AutoTokenizer.from_pretrained("alirezamsh/small100")
-            self.translation_model = M2M100ForConditionalGeneration.from_pretrained("alirezamsh/small100")
-
-            print("Translation LLM Model initialized successfully")
-        except Exception as e:
-            print(f"Error initializing translation model: {e}")
-            # Fallback to a simpler model or rule-based approach
-            self.use_fallback_model()
 
     def initialize_text_2_sql_model(self):
         """Initialize the local LLM model"""
         try:
+            
             self.text_2_sql_model = Llama.from_pretrained(
                 repo_id="Ellbendls/Qwen-3-4b-Text_to_SQL-GGUF",
                 filename="Qwen-3-4b-Text_to_SQL-F16.gguf",
             )
+
             print("Text_to_SQL LLM Model initialized successfully")
         except Exception as e:
             print(f"Error initializing model: {e}")
             # Fallback to a simpler model or rule-based approach
             self.use_fallback_model()
-    
-    async def generate_english_query(self, natural_query: str, language: str) -> str:
-        """Translate Arabic query to English using local LLM"""
-        # Create prompt based on language
-
-        try:
-            self.translation_tokenizer.tgt_lang = "en"
-            encoded_ar = self.translation_tokenizer(natural_query, return_tensors="pt")
-            generated_tokens = self.translation_model.generate(**encoded_ar)
-            response = self.translation_tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)
-            
-            return response[0]
-        except Exception as e:
-            print(f"Error Translation to English: {e}")
-            # Fallback to rule-based generation
-            return self.fallback_sql_generation(natural_query, language)
 
     def use_fallback_model(self):
         """Fallback to a lightweight model or rule-based approach"""
@@ -77,7 +42,11 @@ class LLMService:
         """
         
         prompt = f"""
-        You are a database expert. Convert the following natural language query to valid SQL:
+        You are an expert SQL assistant.
+        You are given the database schema and a Question.
+        Generate only valid SQL for PostgreSQL. Do not include explanations.
+        If multiple tables are needed, use JOINs correctly.
+        Never use tables or columns not in the schema.
         
         {schema_context}
         
@@ -86,6 +55,7 @@ class LLMService:
         SQL:"""
 
         try:
+            
             generated_text = self.text_2_sql_model(prompt, max_tokens=256, temperature=0.2, top_p=0.9)
 
             # Extract SQL from the generated text
